@@ -13,7 +13,14 @@ const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || "refresh_key_45
 
 let refreshTokens = []; // Lưu tạm bộ nhớ
 
-app.use(cors());
+app.use(cors({
+  origin: [
+    "https://duybatdongsan.onrender.com", // Link Frontend của bạn (lấy từ báo lỗi)
+    "http://localhost:5173",              // Để bạn vẫn chạy được dưới máy tính cá nhân
+    "http://localhost:3000"
+  ],
+  credentials: true // Cho phép gửi cookie/token nếu cần
+}));
 app.use(express.json());
 
 mongoose.connect(process.env.MONGO_URI)
