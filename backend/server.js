@@ -176,5 +176,7 @@ app.delete('/api/properties/:id', verifyAdmin, async (req, res) => {
   await Property.findByIdAndDelete(req.params.id);
   res.json({ message: 'Deleted' });
 });
-
+app.get('/', (req, res) => {
+    res.send('Server Bất Động Sản đang chạy ổn định!');
+});
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
