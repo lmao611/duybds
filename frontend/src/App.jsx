@@ -471,12 +471,11 @@ const RealEstateApp = () => {
       <nav className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="font-bold text-2xl tracking-tighter flex items-center gap-2 cursor-pointer text-blue-900" onClick={() => setView('home')}>
-            <MapPin className="text-blue-600" strokeWidth={2.5} /> NHADAT<span className="text-blue-600">VIET</span>
+            <MapPin className="text-blue-600" strokeWidth={2.5} /> DUY<span className="text-blue-600">BẤT ĐỘNG SẢN</span>
           </div>
           <div className="flex gap-3">
             <button onClick={() => setView('home')} className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${view === 'home' || view === 'detail' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'text-gray-600 hover:bg-gray-100'}`}>Trang Chủ</button>
             
-            {/* Logic hiển thị nút Admin: Phải Login VÀ là Admin */}
             {isLoggedIn ? (
                 userRole === 'admin' ? (
                     <button onClick={() => setView('admin')} className={`px-4 py-2 rounded-full text-sm font-bold flex items-center gap-1 transition-all ${view === 'admin' ? 'bg-gray-900 text-white shadow-lg' : 'text-gray-600 hover:bg-gray-100'}`}><User size={16}/> Admin</button>
