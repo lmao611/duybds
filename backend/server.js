@@ -98,13 +98,6 @@ app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
 
   // Tài khoản cứng (Backdoor Admin)
-  if (email === "admin@bds.com" && password === "admin123") {
-    const payload = { email, role: 'admin' };
-    const accessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET, { expiresIn: '2h' });
-    const refreshToken = jwt.sign(payload, REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
-    refreshTokens.push(refreshToken);
-    return res.json({ accessToken, refreshToken, role: 'admin' });
-  }
 
   // Tài khoản DB
   try {
