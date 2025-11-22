@@ -499,56 +499,54 @@ const RealEstateApp = () => {
             </div>
             
             {loading ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {[1,2,3,4].map(i => <div key={i} className="h-80 bg-gray-200 animate-pulse rounded-xl w-full"></div>)}
+                <div className="flex flex-col gap-6">
+                    {[1,2,3,4].map(i => <div key={i} className="h-48 bg-gray-200 animate-pulse rounded-xl w-full"></div>)}
                 </div>
             ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="flex flex-col gap-6">
                     {filteredProperties.length === 0 ? (
-                         <div className="col-span-full py-20 text-center text-gray-500">Không tìm thấy kết quả nào.</div>
+                         <div className="py-20 text-center text-gray-500">Không tìm thấy kết quả nào.</div>
                     ) : (
                         filteredProperties.map(item => {
                             const calculatedPricePerM2 = item.area && item.area > 0 ? Math.round(item.totalPrice / item.area) : 0;
                             return (
                                 <div 
                                     key={item._id} 
-                                    className="bg-white rounded-xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-200 overflow-hidden flex flex-col cursor-pointer group"
+                                    className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 overflow-hidden flex flex-col sm:flex-row cursor-pointer group h-auto sm:min-h-[200px]"
                                     onClick={() => { setSelectedProperty(item); setView('detail'); }}
                                 >
-                                    <div className="relative aspect-[4/3] bg-gray-100 overflow-hidden">
+                                    <div className="relative w-full sm:w-72 md:w-80 h-48 sm:h-auto flex-shrink-0 bg-gray-100 overflow-hidden">
                                         <img src={item.mainImage || PLACEHOLDER_IMG} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt={item.address}/>
-                                        <div className="absolute top-2 right-2 bg-black/60 text-white text-[10px] font-bold px-2 py-1 rounded backdrop-blur-sm uppercase">{item.type}</div>
-                                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 pt-10">
-                                            <div className="text-white font-bold truncate text-shadow-sm">{item.address}</div>
-                                        </div>
+                                        <div className="absolute top-2 left-2 bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm uppercase">{item.type}</div>
                                     </div>
                                     
-                                    <div className="p-4 flex flex-col flex-1">
-                                        <div className="mb-3">
-                                            <div className="flex items-baseline gap-2 mb-1">
-                                                <span className="text-xl md:text-2xl font-extrabold text-red-600"><PriceDisplay value={item.totalPrice} /></span>
-                                            </div>
-                                            <div className="text-xs text-gray-500 font-medium bg-gray-100 inline-block px-2 py-1 rounded">
-                                                ~ {new Intl.NumberFormat('vi-VN').format(calculatedPricePerM2)} đ/m²
+                                    <div className="p-4 sm:p-5 flex flex-col flex-1 justify-between">
+                                        <div>
+                                            <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">{item.address}</h3>
+                                            <div className="flex items-end gap-3 mb-4">
+                                                <span className="text-xl md:text-2xl font-extrabold text-red-600 leading-none"><PriceDisplay value={item.totalPrice} /></span>
+                                                <div className="text-xs text-gray-500 font-medium bg-gray-100 px-2 py-0.5 rounded border border-gray-200 mb-0.5">
+                                                    ~ {new Intl.NumberFormat('vi-VN').format(calculatedPricePerM2)} đ/m²
+                                                </div>
                                             </div>
                                         </div>
 
-                                        <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-xs text-gray-600 mt-auto border-t border-dashed border-gray-200 pt-3">
-                                            <div className="flex items-center gap-1.5">
-                                                <Maximize size={14} className="text-blue-500"/>
+                                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-y-2 gap-x-4 text-sm text-gray-600 pt-4 border-t border-dashed border-gray-200">
+                                            <div className="flex items-center gap-2">
+                                                <Maximize size={16} className="text-blue-500 flex-shrink-0"/>
                                                 <span className="font-bold text-gray-800">{item.area} m²</span>
                                             </div>
-                                            <div className="flex items-center gap-1.5">
-                                                <Compass size={14} className="text-blue-500"/>
+                                            <div className="flex items-center gap-2">
+                                                <Compass size={16} className="text-blue-500 flex-shrink-0"/>
                                                 <span className="truncate">{item.direction}</span>
                                             </div>
-                                            <div className="flex items-center gap-1.5 col-span-2">
-                                                <LayoutGrid size={14} className="text-blue-500"/>
-                                                <span>{item.width}m x {item.length}m</span>
+                                            <div className="flex items-center gap-2 col-span-2 sm:col-span-1">
+                                                <LayoutGrid size={16} className="text-blue-500 flex-shrink-0"/>
+                                                <span className="truncate">{item.width}m x {item.length}m</span>
                                             </div>
-                                            <div className="flex items-center gap-1.5 col-span-2 pt-1">
-                                                <Calendar size={14} className="text-gray-400"/>
-                                                <span className="text-gray-400">{item.regDate}</span>
+                                            <div className="flex items-center gap-2 col-span-2 sm:col-span-1 sm:justify-end">
+                                                <Calendar size={16} className="text-gray-400 flex-shrink-0"/>
+                                                <span className="text-gray-400 text-xs">{item.regDate}</span>
                                             </div>
                                         </div>
                                     </div>
