@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { MapPin, User, ArrowLeft, Trash2, Edit, Save, LayoutGrid, LogOut, Lock, UploadCloud, Image as ImageIcon, Loader, Eye, X, ZoomIn, Search, Users, UserPlus } from 'lucide-react';
 import api from './api'; 
 
-// ... (Giữ nguyên phần constants)
 const CLOUDINARY_CLOUD_NAME = "dqoyqejot"; 
 const CLOUDINARY_UPLOAD_PRESET = "duybds"; 
 const PLACEHOLDER_IMG = "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80";
+
+// --- HELPER COMPONENTS ---
 
 const PriceDisplay = ({ value }) => (
   <span className="font-bold text-red-600 flex items-baseline">
@@ -14,7 +15,6 @@ const PriceDisplay = ({ value }) => (
 );
 
 const ImageUploader = ({ label, imageUrl, onUpload, isUploading }) => {
-    // ... (Giữ nguyên ImageUploader cũ)
     const handleFileChange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -54,13 +54,12 @@ const ImageUploader = ({ label, imageUrl, onUpload, isUploading }) => {
       );
 };
 
+// --- DETAIL VIEW COMPONENT ---
 const DetailView = ({ item, onBack }) => {
     const [activeImage, setActiveImage] = useState(item.mainImage || PLACEHOLDER_IMG);
     const [isZoomed, setIsZoomed] = useState(false);
   
     const thumbnails = [item.mainImage, item.thumb1, item.thumb2, item.thumb3].filter(Boolean);
-    
-    // TÍNH TOÁN GIÁ/M2 TỰ ĐỘNG
     const calculatedPricePerM2 = item.area && item.area > 0 ? Math.round(item.totalPrice / item.area) : 0;
   
     return (
@@ -115,7 +114,6 @@ const DetailView = ({ item, onBack }) => {
                   <div className="text-3xl mb-4 flex items-end gap-2">
                       <PriceDisplay value={item.totalPrice} />
                       <span className="text-gray-500 text-base font-normal mb-1">
-                        {/* HIỂN THỊ GIÁ TÍNH TOÁN */}
                         ~ {new Intl.NumberFormat('vi-VN').format(calculatedPricePerM2)}đ/m²
                       </span>
                   </div>
@@ -180,7 +178,7 @@ const DetailView = ({ item, onBack }) => {
     );
 };
 
-// ... (Giữ nguyên UserManager)
+// --- USER MANAGER COMPONENT ---
 const UserManager = () => {
     const [users, setUsers] = useState([]);
     
@@ -235,7 +233,7 @@ const UserManager = () => {
     );
 };
 
-// ... (Giữ nguyên AdminPanel)
+// --- ADMIN PANEL COMPONENT ---
 const AdminPanel = ({ 
     formData, setFormData, formMode, properties, 
     onSave, onDelete, onEdit, onLogout, onRandom, onReset 
@@ -280,7 +278,6 @@ const AdminPanel = ({
                       </div>
                   </div>
                   <form onSubmit={onSave} className="space-y-3">
-                      {/* ... Các ô input giữ nguyên như cũ ... */}
                       <input className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none text-sm" placeholder="Địa chỉ (Tiêu đề)" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} required />
                       <div className="grid grid-cols-2 gap-2">
                           <input className="p-2 border rounded text-sm" placeholder="Giá tổng" type="number" value={formData.totalPrice} onChange={e => setFormData({...formData, totalPrice: e.target.value})} required />
@@ -341,166 +338,174 @@ const AdminPanel = ({
     );
   };
 
+// --- MAIN APP COMPONENT ---
 const RealEstateApp = () => {
-  const [view, setView] = useState('home');
-  const [properties, setProperties] = useState([]);
-  const [filteredProperties, setFilteredProperties] = useState([]);
-  const [selectedProperty, setSelectedProperty] = useState(null);
-  
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userRole, setUserRole] = useState('user'); // Role state
+  const [view, setView] = useState('home');
+  const [properties, setProperties] = useState([]);
+  const [filteredProperties, setFilteredProperties] = useState([]);
+  const [selectedProperty, setSelectedProperty] = useState(null);
+  
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState('user'); // Role state
 
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isRegistering, setIsRegistering] = useState(false); // Toggle Login/Register
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isRegistering, setIsRegistering] = useState(false); // Toggle Login/Register
 
-  const [authForm, setAuthForm] = useState({ email: '', password: '' });
-  const [formMode, setFormMode] = useState('add'); 
-  const [formData, setFormData] = useState({
-    address: '', totalPrice: '', pricePerM2: '', area: '', type: '',
-    width: '', length: '', direction: '', ownerName: '', phone: '',
-    regDate: new Date().toLocaleDateString('vi-VN'), description: '',
-    mainImage: '', thumb1: '', thumb2: '', thumb3: ''
-  });
+  const [authForm, setAuthForm] = useState({ email: '', password: '' });
+  const [formMode, setFormMode] = useState('add'); 
+  const [formData, setFormData] = useState({
+    address: '', totalPrice: '', pricePerM2: '', area: '', type: '',
+    width: '', length: '', direction: '', ownerName: '', phone: '',
+    regDate: new Date().toLocaleDateString('vi-VN'), description: '',
+    mainImage: '', thumb1: '', thumb2: '', thumb3: ''
+  });
 
-  useEffect(() => {
-    fetchProperties();
-    const storedToken = localStorage.getItem('accessToken');
-    const storedRole = localStorage.getItem('role'); // Lấy role từ local storage
-    if (storedToken) {
-      setIsLoggedIn(true);
-      if (storedRole) setUserRole(storedRole);
-    }
-  }, []);
+  useEffect(() => {
+    fetchProperties();
+    const storedToken = localStorage.getItem('accessToken');
+    const storedRole = localStorage.getItem('role'); // Lấy role từ local storage
+    if (storedToken) {
+      setIsLoggedIn(true);
+      if (storedRole) setUserRole(storedRole);
+    }
+  }, []);
 
-  useEffect(() => {
-    if (!searchTerm.trim()) {
-      setFilteredProperties(properties);
-    } else {
-      const lowerTerm = searchTerm.toLowerCase();
-      const filtered = properties.filter(item => 
-        item.address.toLowerCase().includes(lowerTerm) ||
-        item.ownerName.toLowerCase().includes(lowerTerm) ||
-        item.type.toLowerCase().includes(lowerTerm)
-      );
-      setFilteredProperties(filtered);
-    }
-  }, [searchTerm, properties]);
+  useEffect(() => {
+    if (!searchTerm.trim()) {
+      setFilteredProperties(properties);
+    } else {
+      const lowerTerm = searchTerm.toLowerCase();
+      const filtered = properties.filter(item => 
+        item.address.toLowerCase().includes(lowerTerm) ||
+        item.ownerName.toLowerCase().includes(lowerTerm) ||
+        item.type.toLowerCase().includes(lowerTerm)
+      );
+      setFilteredProperties(filtered);
+    }
+  }, [searchTerm, properties]);
 
-  const fetchProperties = async () => {
-    setLoading(true);
-    try {
-      const res = await api.get('/properties');
-      setProperties(res.data);
-      setFilteredProperties(res.data);
-    } catch (err) { console.error(err); } finally { setLoading(false); }
-  };
+  const fetchProperties = async () => {
+    setLoading(true);
+    try {
+      const res = await api.get('/properties');
+      setProperties(res.data);
+      setFilteredProperties(res.data);
+    } catch (err) { console.error(err); } finally { setLoading(false); }
+  };
 
-  const handleAuth = async (e) => {
-    e.preventDefault();
-    const endpoint = isRegistering ? '/register' : '/login';
-    try {
-      const res = await api.post(endpoint, authForm);
-      
-      if (isRegistering) {
-        alert("Đăng ký thành công! Vui lòng đăng nhập.");
-        setIsRegistering(false);
-      } else {
-        const { accessToken, refreshToken, role } = res.data;
-        localStorage.setItem('accessToken', accessToken);
-        localStorage.setItem('refreshToken', refreshToken);
-        localStorage.setItem('role', role); // Lưu role
+  const handleAuth = async (e) => {
+    e.preventDefault();
+    const endpoint = isRegistering ? '/register' : '/login';
+    try {
+      const res = await api.post(endpoint, authForm);
+      
+      if (isRegistering) {
+        alert("Đăng ký thành công! Vui lòng đăng nhập.");
+        setIsRegistering(false);
+      } else {
+        const { accessToken, refreshToken, role } = res.data;
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+        localStorage.setItem('role', role); // Lưu role
 
-        setIsLoggedIn(true);
-        setUserRole(role);
-        
-        // Chỉ Admin mới được chuyển sang trang admin
-        if (role === 'admin') setView('admin'); 
-        else setView('home');
+        setIsLoggedIn(true);
+        setUserRole(role);
+        
+        // Chỉ Admin mới được chuyển sang trang admin
+        if (role === 'admin') setView('admin'); 
+        else setView('home');
 
-        setAuthForm({ email: '', password: '' });
-      }
-    } catch (err) {
-      alert(err.response?.data?.message || "Lỗi xác thực");
-    }
-  };
+        setAuthForm({ email: '', password: '' });
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || "Lỗi xác thực");
+    }
+  };
 
-  const handleLogout = async () => {
-    try {
-        const refreshToken = localStorage.getItem('refreshToken');
-        if(refreshToken) await api.post('/logout', { refreshToken });
-    } catch (error) { console.error(error); } finally {
-        localStorage.clear();
-        setIsLoggedIn(false);
-        setUserRole('user');
-        setView('home');
-    }
-  };
+  const handleLogout = async () => {
+    try {
+        const refreshToken = localStorage.getItem('refreshToken');
+        if(refreshToken) await api.post('/logout', { refreshToken });
+    } catch (error) { console.error(error); } finally {
+        localStorage.clear();
+        setIsLoggedIn(false);
+        setUserRole('user');
+        setView('home');
+    }
+  };
 
-  const handleSaveProperty = async (e) => {
-    e.preventDefault();
-    try {
-      if (formMode === 'add') { await api.post('/properties', formData); alert('Đã thêm!'); } 
-      else { await api.put(`/properties/${formData._id}`, formData); alert('Đã cập nhật!'); }
-      await fetchProperties(); resetForm();
-    } catch (error) { alert("Lỗi lưu tin"); }
-  };
+  const handleSaveProperty = async (e) => {
+    e.preventDefault();
+    try {
+      if (formMode === 'add') { await api.post('/properties', formData); alert('Đã thêm!'); } 
+      else { await api.put(`/properties/${formData._id}`, formData); alert('Đã cập nhật!'); }
+      await fetchProperties(); resetForm();
+    } catch (error) { alert("Lỗi lưu tin"); }
+  };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Xóa tin này?")) return;
-    try { await api.delete(`/properties/${id}`); fetchProperties(); } 
-    catch (error) { alert("Lỗi xóa tin"); }
-  };
+  const handleDelete = async (id) => {
+    if (!window.confirm("Xóa tin này?")) return;
+    try { await api.delete(`/properties/${id}`); fetchProperties(); } 
+    catch (error) { alert("Lỗi xóa tin"); }
+  };
 
-  const handleEdit = (prop) => { setFormData(prop); setFormMode('edit'); };
+  const handleEdit = (prop) => { setFormData(prop); setFormMode('edit'); };
 
-  const resetForm = () => {
-    setFormData({
-      address: '', totalPrice: '', pricePerM2: '', area: '', type: '', width: '', length: '', direction: '', ownerName: '', phone: '',
-      regDate: new Date().toLocaleDateString('vi-VN'), description: '', mainImage: '', thumb1: '', thumb2: '', thumb3: ''
-    }); setFormMode('add');
-  };
+  const resetForm = () => {
+    setFormData({
+      address: '', totalPrice: '', pricePerM2: '', area: '', type: '', width: '', length: '', direction: '', ownerName: '', phone: '',
+      regDate: new Date().toLocaleDateString('vi-VN'), description: '', mainImage: '', thumb1: '', thumb2: '', thumb3: ''
+    }); setFormMode('add');
+  };
 
-  const fillRandomData = () => {
-    setFormData({
-      address: '123 Nguyễn Văn Linh, Quận 7, TP.HCM', totalPrice: '155000000000', pricePerM2: '643000000', area: '200', type: 'Biệt thự đơn lập',
-      width: '10', length: '20', direction: 'Đông Nam', ownerName: 'Nguyễn Văn A', phone: '0909123456', regDate: '22/11/2025', description: 'Mô tả...',
-      mainImage: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=800&q=80', thumb1: '', thumb2: '', thumb3: ''
-    });
-  };
+  const fillRandomData = () => {
+    setFormData({
+      address: '123 Nguyễn Văn Linh, Quận 7, TP.HCM', totalPrice: '155000000000', pricePerM2: '643000000', area: '200', type: 'Biệt thự đơn lập',
+      width: '10', length: '20', direction: 'Đông Nam', ownerName: 'Nguyễn Văn A', phone: '0909123456', regDate: '22/11/2025', description: 'Mô tả...',
+      mainImage: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=800&q=80', thumb1: '', thumb2: '', thumb3: ''
+    });
+  };
 
-  return (
+  return (
     <div className="min-h-screen bg-gray-100 font-sans text-gray-800">
-      {/* ... (Giữ nguyên phần Navbar) ... */}
+      <nav className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+          <div className="font-bold text-2xl tracking-tighter flex items-center gap-2 cursor-pointer text-blue-900" onClick={() => setView('home')}>
+            <MapPin className="text-blue-600" strokeWidth={2.5} /> DUY<span className="text-blue-600">BẤT ĐỘNG SẢN</span>
+          </div>
+          <div className="flex gap-3">
+            <button onClick={() => setView('home')} className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${view === 'home' || view === 'detail' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'text-gray-600 hover:bg-gray-100'}`}>Trang Chủ</button>
+            
+            {isLoggedIn ? (
+                userRole === 'admin' ? (
+                    <button onClick={() => setView('admin')} className={`px-4 py-2 rounded-full text-sm font-bold flex items-center gap-1 transition-all ${view === 'admin' ? 'bg-gray-900 text-white shadow-lg' : 'text-gray-600 hover:bg-gray-100'}`}><User size={16}/> Admin</button>
+                ) : (
+                    <div className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-blue-700 bg-blue-50 rounded-full"><User size={16}/> Khách</div>
+                )
+            ) : (
+                <button onClick={() => setView('login')} className={`px-4 py-2 rounded-full text-sm font-bold flex items-center gap-1 transition-all ${view === 'login' ? 'bg-gray-900 text-white shadow-lg' : 'text-gray-600 hover:bg-gray-100'}`}><Lock size={16}/> Đăng Nhập</button>
+            )}
+
+            {isLoggedIn && view !== 'admin' && (
+                <button onClick={handleLogout} className="px-3 py-2 text-red-500 hover:bg-red-50 rounded-full"><LogOut size={16}/></button>
+            )}
+          </div>
+        </div>
+      </nav>
 
       <div className="pb-20">
         {view === 'home' && (
-          <div className="max-w-[1400px] mx-auto p-6"> {/* Tăng max-width để bảng rộng rãi hơn */}
+          <div className="max-w-[1400px] mx-auto p-6">
             <div className="mb-8 flex items-end justify-between flex-wrap gap-4">
-              <div>
-                <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Kho Bất Động Sản</h1>
-                <p className="text-gray-500 mt-1">Cập nhật mới nhất tháng 11/2025</p>
-              </div>
-              <div className="relative w-full sm:w-96">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Search className="text-gray-400" size={20}/>
-                </div>
-                <input 
-                  type="text" 
-                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:text-sm transition-shadow shadow-sm" 
-                  placeholder="Tìm kiếm..." 
-                  value={searchTerm} 
-                  onChange={(e) => setSearchTerm(e.target.value)} 
-                />
-              </div>
+              <div><h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Kho Bất Động Sản</h1><p className="text-gray-500 mt-1">Cập nhật mới nhất tháng 11/2025</p></div>
+              <div className="relative w-full sm:w-96"><div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Search className="text-gray-400" size={20}/></div><input type="text" className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:text-sm transition-shadow shadow-sm" placeholder="Tìm kiếm..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} /></div>
             </div>
             
-            {loading ? (
-              <div className="space-y-4">{[1,2,3].map(i => <div key={i} className="h-20 bg-gray-200 animate-pulse rounded-lg w-full"></div>)}</div>
-            ) : (
+            {loading ? <div className="space-y-4">{[1,2,3].map(i => <div key={i} className="h-20 bg-gray-200 animate-pulse rounded-lg w-full"></div>)}</div> : (
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left border-collapse min-w-[1000px]"> {/* min-w để đảm bảo không bị co rúm trên màn nhỏ */}
+                  <table className="w-full text-left border-collapse min-w-[1000px]">
                     <thead>
                       <tr className="bg-gray-50 text-gray-600 text-xs uppercase font-bold border-b">
                         <th className="p-4 w-[30%]">Bất Động Sản</th>
@@ -579,33 +584,28 @@ const RealEstateApp = () => {
           </div>
         )}
 
-        {/* ... (Giữ nguyên các view khác: detail, login, admin) ... */}
         {view === 'detail' && selectedProperty && <DetailView item={selectedProperty} onBack={() => setView('home')} />}
-        
-        {/* ... login view ... */}
+
         {view === 'login' && (
-             // ... Code login cũ
-             <div className="flex items-center justify-center h-[80vh]">
-                 <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md border border-gray-100">
-                    {/* ... form login ... */}
-                    <h2 className="text-2xl font-bold text-center mb-6 text-gray-800 flex justify-center items-center gap-2">
-                      {isRegistering ? <UserPlus className="text-blue-600"/> : <Lock className="text-blue-600"/>} 
-                      {isRegistering ? 'Đăng Ký Tài Khoản' : 'Đăng Nhập'}
-                    </h2>
-                    <form onSubmit={handleAuth} className="space-y-4">
-                      <div><label className="block text-sm font-medium text-gray-700 mb-1">Email</label><input type="email" className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-gray-50" value={authForm.email} onChange={e => setAuthForm({...authForm, email: e.target.value})} placeholder="email@example.com" required /></div>
-                      <div><label className="block text-sm font-medium text-gray-700 mb-1">Mật khẩu</label><input type="password" className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-gray-50" value={authForm.password} onChange={e => setAuthForm({...authForm, password: e.target.value})} placeholder="••••••" required /></div>
-                      <button className="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200">{isRegistering ? 'Đăng Ký Ngay' : 'Đăng Nhập'}</button>
-                    </form>
-                    <div className="mt-6 text-center text-sm">
-                      <span className="text-gray-500">{isRegistering ? 'Đã có tài khoản?' : 'Chưa có tài khoản?'}</span>
-                      <button onClick={() => setIsRegistering(!isRegistering)} className="ml-2 text-blue-600 font-bold hover:underline">{isRegistering ? 'Đăng nhập' : 'Đăng ký miễn phí'}</button>
-                    </div>
-                 </div>
-             </div>
+          <div className="flex items-center justify-center h-[80vh]">
+            <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md border border-gray-100">
+              <h2 className="text-2xl font-bold text-center mb-6 text-gray-800 flex justify-center items-center gap-2">
+                {isRegistering ? <UserPlus className="text-blue-600"/> : <Lock className="text-blue-600"/>} 
+                {isRegistering ? 'Đăng Ký Tài Khoản' : 'Đăng Nhập'}
+              </h2>
+              <form onSubmit={handleAuth} className="space-y-4">
+                <div><label className="block text-sm font-medium text-gray-700 mb-1">Email</label><input type="email" className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-gray-50" value={authForm.email} onChange={e => setAuthForm({...authForm, email: e.target.value})} placeholder="email@example.com" required /></div>
+                <div><label className="block text-sm font-medium text-gray-700 mb-1">Mật khẩu</label><input type="password" className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-gray-50" value={authForm.password} onChange={e => setAuthForm({...authForm, password: e.target.value})} placeholder="••••••" required /></div>
+                <button className="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200">{isRegistering ? 'Đăng Ký Ngay' : 'Đăng Nhập'}</button>
+              </form>
+              <div className="mt-6 text-center text-sm">
+                <span className="text-gray-500">{isRegistering ? 'Đã có tài khoản?' : 'Chưa có tài khoản?'}</span>
+                <button onClick={() => setIsRegistering(!isRegistering)} className="ml-2 text-blue-600 font-bold hover:underline">{isRegistering ? 'Đăng nhập' : 'Đăng ký miễn phí'}</button>
+              </div>
+            </div>
+          </div>
         )}
 
-        {/* ... admin view ... */}
         {view === 'admin' && isLoggedIn && userRole === 'admin' && (
           <AdminPanel 
             formData={formData} setFormData={setFormData} formMode={formMode} properties={properties}
