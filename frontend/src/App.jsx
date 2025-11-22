@@ -547,12 +547,12 @@ const RealEstateApp = () => {
                                 </td>
 
                                 {/* Cột 3: Kích thước (Mới) */}
-                                <td className="p-4 text-sm text-gray-700">
+                                <td className="p-4 text-md text-black font-bold">
                                   {item.width && item.length ? `${item.width}m x ${item.length}m` : '--'}
                                 </td>
 
                                 {/* Cột 4: Hướng (Mới) */}
-                                <td className="p-4 text-sm text-gray-700">
+                                <td className="p-4 text-md text-black font-bold">
                                   {item.direction || '--'}
                                 </td>
 
@@ -569,7 +569,7 @@ const RealEstateApp = () => {
                                 </td>
 
                                 {/* Cột 7: Ngày đăng */}
-                                <td className="p-4 text-sm text-gray-500 text-right">
+                                <td className="p-4 text-md text-black font-bold text-right">
                                   {item.regDate}
                                 </td>
                             </tr>
